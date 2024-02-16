@@ -1,0 +1,64 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-link-run",
+            "type": "shell",
+            "command": "echo Building and Running ",
+            "dependsOrder": "sequence",
+            "dependsOn": ["build", "link", "run"]
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-File",
+                "${workspaceFolder}/build.ps1"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },               
+        {
+            "label": "link",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-LC:/SFML/lib",
+                "${workspaceFolder}/../build/*.o",
+                "-o",
+                "${workspaceFolder}/../build/app.exe",
+                "-lmingw32",
+                "-lsfml-graphics",
+                "-lsfml-window",
+                "-lsfml-system",
+                "-lsfml-main",
+                "-mwindows"
+            ],
+            "dependsOn": ["build"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "${workspaceFolder}/../build/app.exe",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        }
+        
+    ]
+}
