@@ -10,6 +10,7 @@
             int y;
         public:
             Tile(int x, int y, int width, int height, sf::Texture& texture);
+            Tile();
             int getX();
             int getY();
             int getWidth();

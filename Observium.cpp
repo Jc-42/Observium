@@ -9,15 +9,14 @@
 using namespace std; 
 int main() {
     sf::Event event;
-    Game observium(1000, 1000);
-    int i = 0;
+    Game observium(1120, 1120); //35x35 tiles
+    sf::RenderWindow& window = observium.getWindow();
 
-    while (observium.getWindow().isOpen()) {
-        observium.paint(i);
-        i++;
-        while (observium.getWindow().pollEvent(event)) {
+    while (window.isOpen()) {
+        observium.paint();
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
-                observium.getWindow().close();
+                window.close();
                 return 0;
             }
         }

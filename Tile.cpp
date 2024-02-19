@@ -1,10 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include "Tile.h" 
 
+#include <iostream>
+
 Tile::Tile(int x, int y, int width, int height, sf::Texture& texture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), sprite(texture){
-    sprite.setScale(1,1);
+    sprite.setScale(width / texture.getSize().x, height / texture.getSize().y);
     sprite.setPosition(x,y);
 }
+
+Tile::Tile(){
+
+}
+
 
 int Tile::getX(){
     return x;
@@ -34,10 +41,12 @@ void Tile::setY(int y){
 
 void Tile::setWidth(int w){
     width = w;
+    sprite.setScale(sprite.getTexture()->getSize().x / width, sprite.getScale().y);
 }
 
 void Tile::setHeight(int h){
     height = h;
+    sprite.setScale(sprite.getScale().x, sprite.getTexture()->getSize().y / height);
 }
 
 void Tile::draw(sf::RenderWindow& window){

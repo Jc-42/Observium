@@ -6,9 +6,9 @@ class Game {
 private:
     sf::RenderWindow window;
     sf::Texture texture;
-    Tile tile;
+    Tile map[35][35];
 public:
     Game(int sizeX, int sizeY);
     sf::RenderWindow& getWindow();
-    void paint(int frame);   
+    void paint();   
 };
