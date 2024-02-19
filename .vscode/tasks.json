@@ -34,8 +34,7 @@
                 "-lsfml-graphics",
                 "-lsfml-window",
                 "-lsfml-system",
-                "-lsfml-main",
-                "-mwindows"
+                "-lsfml-main"
             ],
             "dependsOn": ["build"],
             "group": {
@@ -47,7 +46,7 @@
             "label": "run",
             "type": "shell",
             "command": "${workspaceFolder}/../build/app.exe",
-            "options": {
+            "options": {    
                 "cwd": "${workspaceFolder}"
             },
             "presentation": {
