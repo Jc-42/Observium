@@ -4,7 +4,7 @@
 #include <iostream>
 
 Tile::Tile(int x, int y, int width, int height, sf::Texture& texture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), sprite(texture){
-    sprite.setScale(width / texture.getSize().x, height / texture.getSize().y);
+    sprite.setScale((double)width / (double)texture.getSize().x, (double)height / (double)texture.getSize().y);
     sprite.setPosition(x,y);
 }
 

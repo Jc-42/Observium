@@ -1,18 +1,25 @@
 #include <SFML/Graphics.hpp>
 #include "Game.h"
 #include "Tile.h"
+#include "Animal.h"
 #include <iostream>
+#include <random>
 
 using namespace sf;
 using namespace std;
 
-Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", Style::Titlebar | Style::Close), texture(){
-    texture.loadFromFile("Grass.png");
-    for(int i = 0; i < 35; i++){
-        for(int j = 0; j < 35; j++){
-            map[i][j] = Tile(i * 32, j * 32, 32, 32, texture);
+Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", Style::Titlebar | Style::Close), tileTexture(), animalTexture(){
+    tileTexture.loadFromFile("Grass.png");
+    animalTexture.loadFromFile("Rabbit.png");
+    rabbit = Animal(50, 50, 16, 16, animalTexture);
+    for(int i = 0; i < 70; i++){
+        for(int j = 0; j < 70; j++){
+            map[i][j] = Tile(i * 16, j * 16, 16, 16, tileTexture);
         }
     }
+    rabbit.moveTo(500, 500);  
+
+    
 }
 
 
@@ -38,14 +45,31 @@ void Game::paint(){
     */
     
     
+    deltaTime = clock.restart().asSeconds();
     
+    if(rabbit.moving == false){ 
+        std::random_device rd;
+        std::mt19937 gen(rd());  
+        std::uniform_int_distribution<int> distributionX( rabbit.getX() - 150,  rabbit.getX() + 150);
+        std::uniform_int_distribution<int> distributionY( rabbit.getY() - 150,  rabbit.getY() + 150);
+        int randX = distributionX(gen);     
+        int randY = distributionY(gen);  
+        if(randX < 20) randX = 20;           
+        if(randX > window.getSize().x - 20) randX = window.getSize().x - 20;              
+        if(randY < 20) randY = 20;
+        if(randY > window.getSize().y- 20) randY = window.getSize().y- 20;   
+        rabbit.moveTo(randX, randY);
+        std::cout << "rabbit moving to " << randX << " " << randY << std::endl;
+    }
+
     Game::window.clear();
     //Game::window.draw(shape);
     //Game::window.draw(text);
-    for(int i = 0; i < 35; i++){
-        for(int j = 0; j < 35; j++){
+    for(int i = 0; i < 70; i++){
+        for(int j = 0; j < 70; j++){
             map[i][j].draw(window);
         }
     }
+    rabbit.draw(window, deltaTime);
     Game::window.display();
 }
