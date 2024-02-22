@@ -10,7 +10,7 @@ private:
     sf::Texture tileTexture;
     sf::Texture animalTexture;
     Animal rabbit;
-    Tile map[34][35];
+    Tile map[35][35];
     double deltaTime;
     double cameraOffsetX;
     double cameraOffsetY;
