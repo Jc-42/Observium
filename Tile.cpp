@@ -28,12 +28,10 @@ int Tile::getWidth(){
 
 void Tile::setX(int x){
     this->x = x;
-    sprite.setPosition(x,y);
 }
 
 void Tile::setY(int y){
     this->y = y;
-    sprite.setPosition(x,y);
 }
 
 void Tile::setWidth(int w){
@@ -42,6 +40,12 @@ void Tile::setWidth(int w){
 }
 
 
-void Tile::draw(sf::RenderWindow& window){
-    window.draw(sprite);
+void Tile::draw(sf::RenderWindow& window, double offsetX, double offsetY){
+    if(x + offsetX != sprite.getPosition().x || y + offsetY != sprite.getPosition().y){
+        sprite.setPosition(x + offsetX, y + offsetY);
+    }
+
+    if((x + offsetX - 30 < window.getSize().x && x + offsetX + 30 > 0) && (y + offsetY - 30 < window.getSize().y && y + offsetY + 30 > 0)){
+        window.draw(sprite);
+    }
 }

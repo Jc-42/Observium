@@ -17,26 +17,34 @@ Animal::Animal(){
 
 }
 
-void Animal::draw(sf::RenderWindow& window, double& deltaTime){
+void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY){
     if(moving){
         if(targetX > x){
-            setX(x + stepSize * deltaTime);
+            x += stepSize * deltaTime;
         }
         else if(targetX < x){            
-            setX(x - stepSize * deltaTime);
+            x -= stepSize * deltaTime;
         }
         if(targetY > y){
-            setY(y + stepSize * deltaTime);
+            y += stepSize * deltaTime;
         }
         else if(targetY < y){
-            setY(y - stepSize * deltaTime);
+            y -= stepSize * deltaTime;
         }
 
         if(abs(targetX - x) <= 10 * stepSize * deltaTime && abs(targetY - y) <= 10 * stepSize * deltaTime){
             moving = false;
         }
     }
-    window.draw(sprite);
+
+    if(x + offsetX != sprite.getPosition().x || y + offsetY != sprite.getPosition().y){
+        sprite.setPosition(x + offsetX, y + offsetY);
+    }
+    
+    if((x + offsetX -30 < window.getSize().x && x + offsetX + 30 > 0) && (y + offsetY - 30 < window.getSize().y && y + offsetY + 30 > 0)){
+        window.draw(sprite);
+        std::cout << "Rabbit !!!" << std::endl;
+    }
 }
 
 
@@ -96,12 +104,10 @@ void Animal::setThirst(double thirst){
 
 void Animal::setX(double x){
     this->x = x;
-    sprite.setPosition(x,y);
 }
 
 void Animal::setY(double y){
     this->y = y;
-    sprite.setPosition(x,y);
 }
 
 void Animal::setWidth(int width){

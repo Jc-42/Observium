@@ -16,5 +16,5 @@
             void setX(int x);
             void setY(int y);
             void setWidth(int w);
-            void draw(sf::RenderWindow& window);
+            void draw(sf::RenderWindow& window, double offsetX, double offsetY);
     };

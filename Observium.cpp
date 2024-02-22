@@ -9,7 +9,7 @@
 using namespace std; 
 int main() {
     sf::Event event;
-    Game observium(1120, 1120); //35x35 tiles
+    Game observium(1120, 900); //35x35 tiles
     sf::RenderWindow& window = observium.getWindow();
 
     while (window.isOpen()) {

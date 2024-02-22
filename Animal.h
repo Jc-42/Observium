@@ -21,7 +21,7 @@ public:
     bool moving;
     Animal(double x, double y, int width, int height, sf::Texture& texture);
     Animal();
-    void draw(sf::RenderWindow& window, double& deltaTime); 
+    void draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY); 
 
     double getHealth();
     double getEnergy();

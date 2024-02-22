@@ -9,6 +9,8 @@ using namespace sf;
 using namespace std;
 
 Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", Style::Titlebar | Style::Close), tileTexture(), animalTexture(){
+    double cameraOffsetX;
+    double cameraOffsetY;
     tileTexture.loadFromFile("RotatedHexagon.png");
     animalTexture.loadFromFile("Rabbit.png");
     rabbit = Animal(50, 50, 20, 20, animalTexture);
@@ -62,18 +64,29 @@ void Game::paint(){
         std::cout << "rabbit moving to " << randX << " " << randY << std::endl;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        std::cout << "left" << std::endl;
+        cameraOffsetX -= 200 * deltaTime;
     }
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+        cameraOffsetX += 200 * deltaTime;
+    }
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+        cameraOffsetY -= 200 * deltaTime;
+    }
+    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+        cameraOffsetY += 200 * deltaTime;
+    }
+
     Game::window.clear();
     //Game::window.draw(shape);
     //Game::window.draw(text);
     for(int i = 0; i < 34; i++){
         for(int j = 0; j < 35; j++){
-            map[i][j].draw(window);
+            map[i][j].draw(window, -cameraOffsetX, -cameraOffsetY);
         }
     }
-    rabbit.draw(window, deltaTime);
+    rabbit.draw(window, deltaTime, -cameraOffsetX, -cameraOffsetY);
     Game::window.display();
 }

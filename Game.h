@@ -12,6 +12,8 @@ private:
     Animal rabbit;
     Tile map[34][35];
     double deltaTime;
+    double cameraOffsetX;
+    double cameraOffsetY;
 public:
     Game(int sizeX, int sizeY);
     sf::RenderWindow& getWindow();
