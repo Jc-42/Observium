@@ -3,13 +3,14 @@
 
 #include <iostream>
 
-Tile::Tile(int x, int y, int width, int height, sf::Texture& texture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), sprite(texture){
-    sprite.setScale((double)width / (double)texture.getSize().x, (double)height / (double)texture.getSize().y);
-    sprite.setPosition(x,y);
+Tile::Tile(double x, double y, int width, sf::Texture& texture) : x(x), y(y), width(width), sprite(texture) {
+    hexagon = new sf::CircleShape(width, 6);
+    sprite.setScale((double)width / (double)texture.getSize().x, (double)width / (double)texture.getSize().y);
+    sprite.setPosition(x, y);
 }
 
-Tile::Tile(){
-
+Tile::Tile() : x(0), y(0), width(1) {
+    hexagon = new sf::CircleShape(width, 6);
 }
 
 
@@ -23,10 +24,6 @@ int Tile::getY(){
 
 int Tile::getWidth(){
     return width;
-}
-
-int Tile::getHeight(){
-    return height;
 }
 
 void Tile::setX(int x){
@@ -44,10 +41,6 @@ void Tile::setWidth(int w){
     sprite.setScale(sprite.getTexture()->getSize().x / width, sprite.getScale().y);
 }
 
-void Tile::setHeight(int h){
-    height = h;
-    sprite.setScale(sprite.getScale().x, sprite.getTexture()->getSize().y / height);
-}
 
 void Tile::draw(sf::RenderWindow& window){
     window.draw(sprite);

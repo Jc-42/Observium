@@ -10,7 +10,7 @@ private:
     sf::Texture tileTexture;
     sf::Texture animalTexture;
     Animal rabbit;
-    Tile map[70][70];
+    Tile map[34][35];
     double deltaTime;
 public:
     Game(int sizeX, int sizeY);
