@@ -14,9 +14,9 @@ Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", 
     tileTexture.loadFromFile("RotatedHexagon.png");
     animalTexture.loadFromFile("Rabbit.png");
     rabbit = Animal(50, 50, 20, 20, animalTexture);
-    for(int i = 0; i < 34; i++){
+    for(int i = 0; i < 35; i++){
         for(int j = 0; j < 35; j++){
-            map[i][j] = Tile(i * 32 + (16 * (j % 2)), (double)j * 32.0 * (.75), 32, tileTexture);
+            map[i][j] = Tile(i * 64 + (32 * (j % 2)), (double)j * 64.0 * (.75), 64, tileTexture);
         }
     }
     rabbit.moveTo(500, 500);  

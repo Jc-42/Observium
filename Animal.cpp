@@ -41,9 +41,8 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
         sprite.setPosition(x + offsetX, y + offsetY);
     }
     
-    if((x + offsetX -30 < window.getSize().x && x + offsetX + 30 > 0) && (y + offsetY - 30 < window.getSize().y && y + offsetY + 30 > 0)){
+    if((x + offsetX - 30 - (sprite.getTexture()->getSize().x * sprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (sprite.getTexture()->getSize().x * sprite.getScale().x) > 0) && (y + offsetY - 30 - (sprite.getTexture()->getSize().y * sprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (sprite.getTexture()->getSize().y * sprite.getScale().y) > 0)){
         window.draw(sprite);
-        std::cout << "Rabbit !!!" << std::endl;
     }
 }
 

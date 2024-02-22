@@ -44,8 +44,8 @@ void Tile::draw(sf::RenderWindow& window, double offsetX, double offsetY){
     if(x + offsetX != sprite.getPosition().x || y + offsetY != sprite.getPosition().y){
         sprite.setPosition(x + offsetX, y + offsetY);
     }
-
-    if((x + offsetX - 30 < window.getSize().x && x + offsetX + 30 > 0) && (y + offsetY - 30 < window.getSize().y && y + offsetY + 30 > 0)){
+    
+    if((x + offsetX - 30 - (sprite.getTexture()->getSize().x * sprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (sprite.getTexture()->getSize().x * sprite.getScale().x) > 0) && (y + offsetY - 30 - (sprite.getTexture()->getSize().y * sprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (sprite.getTexture()->getSize().y * sprite.getScale().y) > 0)){
         window.draw(sprite);
     }
 }
