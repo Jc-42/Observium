@@ -8,7 +8,8 @@
             int y;
             sf::CircleShape* hexagon;
         public:
-            Tile(double x, double y, int width, sf::Texture& texture);
+            std::string tag;
+            Tile(double x, double y, int width, sf::Texture& texture, std::string tag);
             Tile();
             int getX();
             int getY();

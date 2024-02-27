@@ -3,10 +3,11 @@
 
 #include <iostream>
 
-Tile::Tile(double x, double y, int width, sf::Texture& texture) : x(x), y(y), width(width), sprite(texture) {
+Tile::Tile(double x, double y, int width, sf::Texture& texture, std::string tag) : x(x), y(y), width(width), sprite(texture) {
     hexagon = new sf::CircleShape(width, 6);
     sprite.setScale((double)width / (double)texture.getSize().x, (double)width / (double)texture.getSize().y);
     sprite.setPosition(x, y);
+    this->tag = tag;
 }
 
 Tile::Tile() : x(0), y(0), width(1) {

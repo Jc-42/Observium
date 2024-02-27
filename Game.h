@@ -8,6 +8,7 @@ private:
     sf::RenderWindow window;
     sf::Clock clock;
     sf::Texture tileTexture;
+    sf::Texture waterTexture;
     sf::Texture animalTexture;
     Animal rabbit;
     Tile map[35][35];
