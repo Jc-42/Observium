@@ -1,14 +1,20 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Tile.h"
 
 class Animal {
 private:
-    double health;
-    double energy;
-    double hunger;
-    double thirst; 
-    double x; 
-    double y;  
+//TODO figure out what to do with health, need or somting else?
+    
+    //Needs
+        double energyNeed;
+        double foodNeed;
+        double waterNeed; 
+    //Stats
+        double health;
+        int sight;
+    //States
+        std::string action = "idle"; 
     int width; 
     int height; 
     sf::IntRect rect;
@@ -17,28 +23,14 @@ public:
 
     double targetX; 
     double targetY;
+    double x; 
+    double y;  
     double stepSize = 50;
     bool moving;
+    bool doingAction;
     Animal(double x, double y, int width, int height, sf::Texture& texture);
     Animal();
-    void draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY); 
-
-    double getHealth();
-    double getEnergy();
-    double getHunger();
-    double getThirst();
-    double getX();
-    double getY();
-    int getWidth();
-    int getHeight();
-
-    void setHealth(double health);
-    void setEnergy(double energy);
-    void setHunger(double hunger);
-    void setThirst(double thirst);
-    void setX(double x);
-    void setY(double y);
-    void setWidth(int width);
-    void setHeight(int height);
+    void draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY, Tile (&map)[35][35]); 
     void moveTo(double x, double y);
+    void drink(Tile (&map)[35][35]);
 };
