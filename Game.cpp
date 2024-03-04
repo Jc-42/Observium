@@ -50,7 +50,7 @@ Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", 
   for (const auto& point : results) {
       std::cout << "[" << point[0] << ", " << point[1] << ", " << "]" << std::endl;
   }
-
+     
 
 }
 
@@ -96,6 +96,8 @@ void Game::paint(){
         cameraOffsetY += 200 * deltaTime;
     }
 
+    
+    
     Game::window.clear();
     //Game::window.draw(shape);
     //Game::window.draw(text);
@@ -107,7 +109,7 @@ void Game::paint(){
     rabbit.draw(window, deltaTime, -cameraOffsetX, -cameraOffsetY, map);
     Game::window.display();
 
-    if(rabbit.moving == false){ 
+    if(rabbit.moving == false && rabbit.doingAction == false){ 
       std::random_device rd;
       std::mt19937 gen(rd());  
       std::uniform_int_distribution<int> distributionX( rabbit.x - 150,  rabbit.x + 150);
@@ -120,4 +122,5 @@ void Game::paint(){
       if(randY > window.getSize().y- 20) randY = window.getSize().y- 20;   
       rabbit.moveTo(randX, randY);
     }
+    
 }

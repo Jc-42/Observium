@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Tile.h"
 #include "Animal.h"
+#include <cmath>
 
 class Game {
 private:
@@ -61,6 +62,31 @@ static std::vector<std::vector<int>> generate_results(const std::vector<int>& ce
     resultsFin.push_back(Game::cube_to_oddr(results[i][0], results[i][1], results[i][2]));
   }
   return resultsFin;
+}
+
+static std::vector<int> pixel_to_hex(double x, double y, double width){
+  double hexSize = width / std::sqrt(3);
+  double q = (((std::sqrt(3)/3) * x)  -  ((1.0/3) * y)) / hexSize;
+  double r = ((2.0/3) * y) / hexSize;
+  double s = -q - r;
+  std::vector<int> cube = cube_round(q, r, s);
+  return cube_to_oddr(cube[0], cube[1], cube[2]);
+}
+
+static std::vector<int> cube_round(double frac_q, double frac_r, double frac_s){
+  int q = std::round(frac_q);
+  int r = std::round(frac_r);
+  int s = std::round(frac_s);
+
+  double q_diff = std::abs(q - frac_q);
+  double r_diff = std::abs(r - frac_r);
+  double s_diff = std::abs(s - frac_s);
+
+  if (q_diff > r_diff && q_diff > s_diff) q = -r-s;
+  else if (r_diff > s_diff) r = -q-s;
+  else s = -q-r;
+
+  return std::vector<int>{q, r, s};
 }
 
 };

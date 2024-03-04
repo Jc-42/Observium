@@ -23,8 +23,10 @@ Animal::Animal(){
 
 
 void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY, Tile (&map)[35][35]){
-  
-    
+    sf::CircleShape target(20);
+    target.setPosition(targetX + offsetX, targetY + offsetY);
+    target.setFillColor(sf::Color().Red);
+    window.draw(target);
     if(moving){
         if(targetX > x){
             x += stepSize * deltaTime;
@@ -45,15 +47,16 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
 
         if(abs(targetX - x) <= 10 * stepSize * deltaTime && abs(targetY - y) <= 10 * stepSize * deltaTime){
             moving = false;
-            doingAction = false;
             if(action.compare("drinking") == 0){
                 waterNeed = 0;
                 action = "idle";
+                doingAction = false;
+                std::cout<< "drank water" << std::endl;
             }
         }
     }
 
-    if(!doingAction){
+    if(!doingAction && !moving){
         std::cout<<"energy: " << energyNeed << " food: " << foodNeed << " water: " << waterNeed<<std::endl;
         //TODO make this much more simplified and less spagetti.
         std::random_device rd;
@@ -103,8 +106,6 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
                 drink(map);
             }
         }
-        
-        doingAction = true;
     }
     
 
@@ -116,7 +117,7 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
         window.draw(sprite);
     }
 
-   
+    //std::vector<int> test = Game::pixel_to_hex((double)x, (double)y, (double)width);
 }
 
 
@@ -125,25 +126,35 @@ void Animal::moveTo(double x, double y){
     targetX = x; 
     targetY = y;
     moving = true;
-    doingAction = true;
 }
 
 void Animal::drink(Tile (&map)[35][35]){
 //TODO pregenerate this as a vecotr centered on 0,0 then add vector values to current values
-  std::vector<int> center = Game::oddr_to_cube((int)(x / 35), (int)(y / 35));
-  std::vector<std::vector<int>> results = Game::generate_results(center, sight);
-  for(int i = 0; i < results.size(); i++){
-    if(results[i][0] >= 0 && results[i][1] >= 0 && results[i][0] < 35 && results[i][1] < 35){
-        Tile& current = map[results[0][0]][results[0][1]];
-        if(current.tag.compare("water") == 0){
-            action = "drinking";
-            moveTo((double)current.getX() + current.getWidth() / 2.0, (double)current.getY() + current.getWidth() / 2.0);
-            return;
+    
+    //convert the animal pos to hex, then search all surrounding hexs in a range of sight for water if found navigate to it.
+    std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 64);
+    std::vector<int> center = Game::oddr_to_cube(animalHexPos[0], animalHexPos[1]);
+    std::vector<std::vector<int>> results = Game::generate_results(center, sight);
+
+    std::cout<<"Center: " << animalHexPos[0] << ", " << animalHexPos[1] <<std::endl;
+    for(int i = 0; i < results.size(); i++){
+        if(results[i][0] >= 0 && results[i][1] >= 0 && results[i][0] < 35 && results[i][1] < 35){
+            Tile& current = map[results[i][0]][results[i][1]];
+            if(current.tag.compare("water") == 0){
+                action = "drinking";
+                std::cout<<"water at: " << (double)current.getX() + current.getWidth() / 2.0 << ", " << (double)current.getY() + current.getWidth() / 2.0 << std::endl;
+                doingAction = true;
+                moveTo((double)current.getX() + current.getWidth() / 2.0, (double)current.getY() + current.getWidth() / 2.0);
+                return;
+            }
         }
+        else{
+           std::cout<<"this tile is out of bounds"<<std::endl;
+        }
+        
     }
-  }
   //TODO implement somthing to do when the animal cannot find water in its vacity, maybe roll again with a +10 bonus
   // to keep searching for water. Also maybe implement a system where it makes slighly informed decision about where
-  // to go
+  // to go ie less random wandering
 }
 
