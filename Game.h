@@ -88,4 +88,13 @@ static std::vector<int> cube_round(double frac_q, double frac_r, double frac_s){
   return std::vector<int>{q, r, s};
 }
 
+static sf::Vector2f normalize(const sf::Vector2f& vector) {
+  double length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
+  if (length != 0.0f) {
+    return sf::Vector2f(vector.x / length, vector.y / length);
+  } else {
+    return sf::Vector2f(0.0f, 0.0f);
+  }
+}
+
 };

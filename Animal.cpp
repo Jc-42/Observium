@@ -149,35 +149,30 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
         }
     }
 
+    sf::Vector2f targetPosition = sf::Vector2f(nextTile->getX(), nextTile->getY());
+    sf::Vector2f currentPosition = sf::Vector2f(x, y);
 
-        if(nextTile->getX() > x){
-            x += stepSize * deltaTime;
-        }
-        else if(nextTile->getX() < x){            
-            x -= stepSize * deltaTime;
-        }
-        if(nextTile->getY() > y){
-            y += stepSize * deltaTime;
-        }
-        else if(nextTile->getY() < y){
-            y -= stepSize * deltaTime;
-        }
+    sf::Vector2f direction = targetPosition - currentPosition;
+    direction = Game::normalize(direction); // Function to normalize the vector (make its length 1)
 
-        waterNeed += .015 * stepSize * deltaTime;
-        foodNeed += .0075 * stepSize * deltaTime;
-        energyNeed += .002 * stepSize * deltaTime;
+    x += direction.x * stepSize * deltaTime;
+    y += direction.y * stepSize * deltaTime;
 
-        
-        //Check if the animal has moved to the target
-        if(sqrt(pow(targetX - x, 32) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
-            isWalking = false;
-            betweenHex = false;
-        }
+    waterNeed += .015 * stepSize * deltaTime;
+    foodNeed += .0075 * stepSize * deltaTime;
+    energyNeed += .002 * stepSize * deltaTime;
 
-        //Check if the animal has moved to the next tile in its path
-        else if(sqrt(pow(nextTile->getX() - x, 2) + pow(nextTile->getY() - y, 2)) <= 5 * stepSize * deltaTime){
-            betweenHex = false;
-        }
+    
+    //Check if the animal has moved to the target
+    if(sqrt(pow(targetX - x, 32) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
+        isWalking = false;
+        betweenHex = false;
+    }
+
+    //Check if the animal has moved to the next tile in its path
+    else if(sqrt(pow(nextTile->getX() - x, 2) + pow(nextTile->getY() - y, 2)) <= 5 * stepSize * deltaTime){
+        betweenHex = false;
+    }
 }
 
 //TODO implement a memory for the animal so that it knows where its been
