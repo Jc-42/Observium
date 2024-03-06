@@ -64,10 +64,9 @@ static std::vector<std::vector<int>> generate_results(const std::vector<int>& ce
   return resultsFin;
 }
 
-static std::vector<int> pixel_to_hex(double x, double y, double width){
-  double hexSize = width / std::sqrt(3);
-  double q = (((std::sqrt(3)/3) * x)  -  ((1.0/3) * y)) / hexSize;
-  double r = ((2.0/3) * y) / hexSize;
+static std::vector<int> pixel_to_hex(double x, double y, double radius){
+  double q = (((std::sqrt(3)/3) * x)  -  ((1.0/3) * y)) / radius;
+  double r = ((2.0/3) * y) / radius;
   double s = -q - r;
   std::vector<int> cube = cube_round(q, r, s);
   return cube_to_oddr(cube[0], cube[1], cube[2]);

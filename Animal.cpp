@@ -6,7 +6,8 @@
 #include <cmath>
 #include <random>
 
-Animal::Animal(double x, double y, int width, int height, sf::Texture& texture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), sprite(texture), moving(false){
+Animal::Animal(double x, double y, int width, int height, sf::Texture& texture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), sprite(texture), isWalking(false){
+    sprite.setOrigin(width / 2, height / 2);
     sprite.setScale((double)width / (double)texture.getSize().x, (double)height / (double)texture.getSize().y);
     sprite.setPosition(x,y);
     health = 100;
@@ -24,39 +25,27 @@ Animal::Animal(){
 
 void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY, Tile (&map)[35][35]){
     sf::CircleShape target(20);
+    /*target.setOrigin(20, 20);
     target.setPosition(targetX + offsetX, targetY + offsetY);
     target.setFillColor(sf::Color().Red);
     window.draw(target);
-    if(moving){
-        if(targetX > x){
-            x += stepSize * deltaTime;
-        }
-        else if(targetX < x){            
-            x -= stepSize * deltaTime;
-        }
-        if(targetY > y){
-            y += stepSize * deltaTime;
-        }
-        else if(targetY < y){
-            y -= stepSize * deltaTime;
-        }
+    */
+    
+    
 
-        waterNeed += .015 * stepSize * deltaTime;
-        foodNeed += .0075 * stepSize * deltaTime;
-        energyNeed += .002 * stepSize * deltaTime;
-
-        if(abs(targetX - x) <= 10 * stepSize * deltaTime && abs(targetY - y) <= 10 * stepSize * deltaTime){
-            moving = false;
-            if(action.compare("drinking") == 0){
-                waterNeed = 0;
-                action = "idle";
-                doingAction = false;
-                std::cout<< "drank water" << std::endl;
-            }
-        }
+    if(isWalking){
+       move(deltaTime, map);
     }
+    /*
+    if(nextTile != nullptr){
+        sf::CircleShape target2(4);
+        target2.setPosition(nextTile->getX() + offsetX, nextTile->getY() + offsetY);
+        target2.setFillColor(sf::Color().White);
+        window.draw(target2);
+    }
+    */
 
-    if(!doingAction && !moving){
+    if(!doingAction && !isWalking){
         std::cout<<"energy: " << energyNeed << " food: " << foodNeed << " water: " << waterNeed<<std::endl;
         //TODO make this much more simplified and less spagetti.
         std::random_device rd;
@@ -120,19 +109,89 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
     //std::vector<int> test = Game::pixel_to_hex((double)x, (double)y, (double)width);
 }
 
+void Animal::move(double& deltaTime, Tile (&map)[35][35]){
+    if(!betweenHex){
+        std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 32);
+        std::vector<int> center = Game::oddr_to_cube(animalHexPos[0], animalHexPos[1]);
+        std::vector<std::vector<int>> results = Game::generate_results(center, 1);
+        double min = std::numeric_limits<double>::max();
+        double distance;
+
+        //Get the ajacent tile that is closest to the target but skip water tiles as they shouldent be walkable
+        for(int i = 0; i < results.size(); i++){
+            if(results[i][0] >= 0 && results[i][0] < 35 && results[i][1] >= 0 && results[i][1] < 35){
+                if(map[results[i][0]][results[i][1]].tag.compare("water") == 0){
+                    if(action.compare("drinking") == 0){
+                        isWalking = false;
+                        betweenHex = false;
+                        waterNeed = 0;
+                        action = "idle";
+                        doingAction = false;
+                        std::cout<< "drank water" << std::endl;
+                        return;
+                    }
+                    continue;    
+                }
+                if(results[i][0] == animalHexPos[0] && results[i][1] == animalHexPos[1]) continue; //Skip the tile the animal is on
+                distance = sqrt(pow(map[results[i][0]][results[i][1]].getX() - targetX, 2) + pow(map[results[i][0]][results[i][1]].getY() - targetY, 2)); //Pythagorean Theorem! who ever said it would'nt be useful in real life?
+                if(distance < min){
+                    min = distance;
+                    nextTile = &map[results[i][0]][results[i][1]];
+                }
+            }            
+        }
+
+        if(min == std::numeric_limits<double>::max()){
+            std::cout<< "No Path Found" <<std::endl; //If this is called you done fucked up
+        }   
+        else{
+            betweenHex = true;
+        }
+    }
+
+
+        if(nextTile->getX() > x){
+            x += stepSize * deltaTime;
+        }
+        else if(nextTile->getX() < x){            
+            x -= stepSize * deltaTime;
+        }
+        if(nextTile->getY() > y){
+            y += stepSize * deltaTime;
+        }
+        else if(nextTile->getY() < y){
+            y -= stepSize * deltaTime;
+        }
+
+        waterNeed += .015 * stepSize * deltaTime;
+        foodNeed += .0075 * stepSize * deltaTime;
+        energyNeed += .002 * stepSize * deltaTime;
+
+        
+        //Check if the animal has moved to the target
+        if(sqrt(pow(targetX - x, 32) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
+            isWalking = false;
+            betweenHex = false;
+        }
+
+        //Check if the animal has moved to the next tile in its path
+        else if(sqrt(pow(nextTile->getX() - x, 2) + pow(nextTile->getY() - y, 2)) <= 5 * stepSize * deltaTime){
+            betweenHex = false;
+        }
+}
 
 //TODO implement a memory for the animal so that it knows where its been
 void Animal::moveTo(double x, double y){
     targetX = x; 
     targetY = y;
-    moving = true;
+    isWalking = true;
 }
 
 void Animal::drink(Tile (&map)[35][35]){
 //TODO pregenerate this as a vecotr centered on 0,0 then add vector values to current values
     
     //convert the animal pos to hex, then search all surrounding hexs in a range of sight for water if found navigate to it.
-    std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 64);
+    std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 32);
     std::vector<int> center = Game::oddr_to_cube(animalHexPos[0], animalHexPos[1]);
     std::vector<std::vector<int>> results = Game::generate_results(center, sight);
 
@@ -142,9 +201,9 @@ void Animal::drink(Tile (&map)[35][35]){
             Tile& current = map[results[i][0]][results[i][1]];
             if(current.tag.compare("water") == 0){
                 action = "drinking";
-                std::cout<<"water at: " << (double)current.getX() + current.getWidth() / 2.0 << ", " << (double)current.getY() + current.getWidth() / 2.0 << std::endl;
+                std::cout<<"water at: " << (double)current.getX() << ", " << (double)current.getY() << std::endl;
                 doingAction = true;
-                moveTo((double)current.getX() + current.getWidth() / 2.0, (double)current.getY() + current.getWidth() / 2.0);
+                moveTo((double)current.getX(), (double)current.getY());
                 return;
             }
         }
