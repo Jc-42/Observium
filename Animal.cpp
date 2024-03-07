@@ -6,10 +6,15 @@
 #include <cmath>
 #include <random>
 
-Animal::Animal(double x, double y, int width, int height, sf::Texture& texture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), sprite(texture), isWalking(false){
-    sprite.setOrigin(width / 2, height / 2);
-    sprite.setScale((double)width / (double)texture.getSize().x, (double)height / (double)texture.getSize().y);
-    sprite.setPosition(x,y);
+Animal::Animal(double x, double y, int width, int height, sf::Texture& lTexture, sf::Texture& rTexture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), lSprite(lTexture), rSprite(rTexture), isWalking(false){
+    lSprite.setOrigin(width / 2, height / 2);
+    lSprite.setScale((double)width / (double)lTexture.getSize().x, (double)height / (double)lTexture.getSize().y);
+    lSprite.setPosition(x,y);
+
+    rSprite.setOrigin(width / 2, height / 2);
+    rSprite.setScale((double)width / (double)rTexture.getSize().x, (double)height / (double)rTexture.getSize().y);
+    rSprite.setPosition(x,y);
+
     health = 100;
     //Needs
     energyNeed = 0;
@@ -25,25 +30,25 @@ Animal::Animal(){
 
 void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, double offsetY, Tile (&map)[35][35]){
     sf::CircleShape target(20);
-    /*target.setOrigin(20, 20);
+    target.setOrigin(20, 20);
     target.setPosition(targetX + offsetX, targetY + offsetY);
     target.setFillColor(sf::Color().Red);
     window.draw(target);
-    */
+    
     
     
 
     if(isWalking){
        move(deltaTime, map);
     }
-    /*
+    
     if(nextTile != nullptr){
         sf::CircleShape target2(4);
         target2.setPosition(nextTile->getX() + offsetX, nextTile->getY() + offsetY);
         target2.setFillColor(sf::Color().White);
         window.draw(target2);
     }
-    */
+    
 
     if(!doingAction && !isWalking){
         std::cout<<"energy: " << energyNeed << " food: " << foodNeed << " water: " << waterNeed<<std::endl;
@@ -97,21 +102,30 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
         }
     }
     
-
-    if(x + offsetX != sprite.getPosition().x || y + offsetY != sprite.getPosition().y){
-        sprite.setPosition(x + offsetX, y + offsetY);
+    if(directionFacing == 1){
+        if((x + offsetX - 30 - (rSprite.getTexture()->getSize().x * rSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (rSprite.getTexture()->getSize().x * rSprite.getScale().x) > 0) && (y + offsetY - 30 - (rSprite.getTexture()->getSize().y * rSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (rSprite.getTexture()->getSize().y * rSprite.getScale().y) > 0)){
+            rSprite.setPosition(x + offsetX, y + offsetY);
+            window.draw(rSprite);
+        }
     }
-    
-    if((x + offsetX - 30 - (sprite.getTexture()->getSize().x * sprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (sprite.getTexture()->getSize().x * sprite.getScale().x) > 0) && (y + offsetY - 30 - (sprite.getTexture()->getSize().y * sprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (sprite.getTexture()->getSize().y * sprite.getScale().y) > 0)){
-        window.draw(sprite);
+    else if(directionFacing == -1){
+        if((x + offsetX - 30 - (lSprite.getTexture()->getSize().x * lSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSprite.getTexture()->getSize().x * lSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSprite.getTexture()->getSize().y * lSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSprite.getTexture()->getSize().y * lSprite.getScale().y) > 0)){
+            lSprite.setPosition(x + offsetX, y + offsetY);
+            window.draw(lSprite);
+        }
     }
+   
 
     //std::vector<int> test = Game::pixel_to_hex((double)x, (double)y, (double)width);
+
+    if(foodNeed > 100 || waterNeed > 100){
+        health -= .002 * stepSize * deltaTime;
+    }
 }
 
 void Animal::move(double& deltaTime, Tile (&map)[35][35]){
     if(!betweenHex){
-        std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 32);
+        std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 48);
         std::vector<int> center = Game::oddr_to_cube(animalHexPos[0], animalHexPos[1]);
         std::vector<std::vector<int>> results = Game::generate_results(center, 1);
         double min = std::numeric_limits<double>::max();
@@ -155,6 +169,9 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
     sf::Vector2f direction = targetPosition - currentPosition;
     direction = Game::normalize(direction); // Function to normalize the vector (make its length 1)
 
+    if(direction.x > 0) directionFacing = 1;
+    else if(direction.x < 0) directionFacing = -1;
+
     x += direction.x * stepSize * deltaTime;
     y += direction.y * stepSize * deltaTime;
 
@@ -164,7 +181,7 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
 
     
     //Check if the animal has moved to the target
-    if(sqrt(pow(targetX - x, 32) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
+    if(sqrt(pow(targetX - x, 2) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
         isWalking = false;
         betweenHex = false;
     }
@@ -186,7 +203,7 @@ void Animal::drink(Tile (&map)[35][35]){
 //TODO pregenerate this as a vecotr centered on 0,0 then add vector values to current values
     
     //convert the animal pos to hex, then search all surrounding hexs in a range of sight for water if found navigate to it.
-    std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 32);
+    std::vector<int> animalHexPos = Game::pixel_to_hex((double)x, (double)y, 48);
     std::vector<int> center = Game::oddr_to_cube(animalHexPos[0], animalHexPos[1]);
     std::vector<std::vector<int>> results = Game::generate_results(center, sight);
 

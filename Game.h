@@ -8,14 +8,23 @@ class Game {
 private:
     sf::RenderWindow window;
     sf::Clock clock;
-    sf::Texture tileTexture;
+    sf::Texture grassTexture1;
+    sf::Texture altGrassTexture1;
+    sf::Texture grassTexture2;
+    sf::Texture altGrassTexture2;
+    sf::Texture grassTexture3;
+    sf::Texture altGrassTexture3;
+    sf::Texture grassTexture4;
+    sf::Texture altGrassTexture4;
+    sf::Texture grassTexture5;
     sf::Texture waterTexture;
-    sf::Texture animalTexture;
+    sf::Texture animalTextureL;
+    sf::Texture animalTextureR;
     Animal rabbit;
     Tile map[35][35];
     double deltaTime;
-    double cameraOffsetX;
-    double cameraOffsetY;
+    int cameraOffsetX;
+    int cameraOffsetY;
 public:
     Game(int sizeX, int sizeY);
     sf::RenderWindow& getWindow();

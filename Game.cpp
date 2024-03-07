@@ -17,25 +17,44 @@ std::vector<int> cube_to_axial(const std::vector<int> &cube){
     return axial;
 }
 
-Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", Style::Titlebar | Style::Close), tileTexture(), animalTexture(){
-    double cameraOffsetX;
-    double cameraOffsetY;
+Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", Style::Titlebar | Style::Close){
+    cameraOffsetX = 0;
+    cameraOffsetY = 0;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distributionWater(1, 100);
-    tileTexture.loadFromFile("RotatedHexagon.png");
+    grassTexture1.loadFromFile("Grass1.png");
+    altGrassTexture1.loadFromFile("Grass1f.png");
+    grassTexture2.loadFromFile("Grass2.png");
+    altGrassTexture2.loadFromFile("Grass2f.png");
+    grassTexture3.loadFromFile("Grass3.png");
+    altGrassTexture3.loadFromFile("Grass3f.png");
+    grassTexture4.loadFromFile("Grass4.png");
+    altGrassTexture4.loadFromFile("Grass4f.png");
+    grassTexture5.loadFromFile("Grass5.png");
     waterTexture.loadFromFile("RotatedWater.png");
-    animalTexture.loadFromFile("Rabbit.png");
-    rabbit = Animal(50, 50, 20, 20, animalTexture);
+    animalTextureL.loadFromFile("RabbitL.png");
+    animalTextureR.loadFromFile("RabbitR.png");
+    rabbit = Animal(50, 50, 25, 25, animalTextureL, animalTextureR);
     int rWater;
+    int rGrass;
     for (int i = 0; i < 35; i++){
         for (int j = 0; j < 35; j++){
             rWater = distributionWater(gen);
+            rGrass = distributionWater(gen);
             if (rWater <= 5){
-                map[i][j] = Tile(i * (32 * sqrt(3)) + (((sqrt(3) * 32.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 32), 32, waterTexture, "water");
+                map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, waterTexture, "water");
             }
             else{
-                map[i][j] = Tile(i * (32 * sqrt(3)) + (((sqrt(3) * 32.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 32), 32, tileTexture, "grass");
+                if(rGrass < 10) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, grassTexture1, "grass");
+                else if(rGrass >= 10 && rGrass < 20) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, altGrassTexture1, "grass");
+                else if(rGrass >= 20 && rGrass < 30) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, grassTexture2, "grass");
+                else if(rGrass >= 30 && rGrass < 40) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, altGrassTexture2, "grass");
+                else if(rGrass >= 40 && rGrass < 50) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, grassTexture3, "grass");
+                else if(rGrass >= 50 && rGrass < 60) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, altGrassTexture3, "grass");
+                else if(rGrass >= 60 && rGrass < 70) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, grassTexture4, "grass");
+                else if(rGrass >= 70 && rGrass < 80) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, altGrassTexture4, "grass");
+                else if(rGrass >= 80) map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, grassTexture5, "grass");
             }
         }
     }
@@ -77,17 +96,17 @@ void Game::paint(){
     deltaTime = clock.restart().asSeconds();
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        cameraOffsetX -= 200 * deltaTime;
+        cameraOffsetX -=  (int)(350 * deltaTime);
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        cameraOffsetX += 200 * deltaTime;
+        cameraOffsetX += (int)(350 * deltaTime);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-        cameraOffsetY -= 200 * deltaTime;
+        cameraOffsetY -= (int)(350 * deltaTime);
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-        cameraOffsetY += 200 * deltaTime;
+        cameraOffsetY += (int)(350 * deltaTime);
     }
 /*
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -105,25 +124,25 @@ void Game::paint(){
             map[i][j].draw(window, -cameraOffsetX, -cameraOffsetY);
         }
     }
-    rabbit.draw(window, deltaTime, -cameraOffsetX, -cameraOffsetY, map);
+    if(rabbit.health > 0) rabbit.draw(window, deltaTime, -cameraOffsetX, -cameraOffsetY, map);
     //window.draw(hoverPos);
     Game::window.display();
 
     if (rabbit.isWalking == false && rabbit.doingAction == false){
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_int_distribution<int> distributionX(rabbit.x - 150, rabbit.x + 150);
-        std::uniform_int_distribution<int> distributionY(rabbit.y - 150, rabbit.y + 150);
+        std::uniform_int_distribution<int> distributionX(rabbit.x - 350, rabbit.x + 350);
+        std::uniform_int_distribution<int> distributionY(rabbit.y - 350, rabbit.y + 350);
         int randX = distributionX(gen);
         int randY = distributionY(gen);
         if (randX < 20) randX = 20;
         if (randX > window.getSize().x - 20) randX = window.getSize().x - 20;
         if (randY < 20)  randY = 20;
         if (randY > window.getSize().y - 20) randY = window.getSize().y - 20;
-        std::vector<int> random = Game::pixel_to_hex(randX, randY, 32);
+        std::vector<int> random = Game::pixel_to_hex(randX, randY, 48);
         if(map[random[0]][random[1]].tag.compare("water") != 0){
             //TODO make a function to do this called hex_to_pixel
-            rabbit.moveTo(random[0] * (32 * sqrt(3)) + (((sqrt(3) * 32.0) / (2.0)) * (random[1] % 2)), (double)random[1] * ((3.0 / 2.0) * 32));
+            rabbit.moveTo(random[0] * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (random[1] % 2)), (double)random[1] * ((3.0 / 2.0) * 48));
         }
     }
 }
