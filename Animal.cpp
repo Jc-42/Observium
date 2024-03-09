@@ -6,7 +6,7 @@
 #include <cmath>
 #include <random>
 
-Animal::Animal(double x, double y, int width, int height, sf::Texture& lTexture, sf::Texture& rTexture, sf::Texture& lSleepTexture, sf::Texture& rSleepTexture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), lSprite(lTexture), rSprite(rTexture), lSleepingSprite(lTexture), rSleepingSprite(rTexture), isWalking(false){
+Animal::Animal(double x, double y, int width, int height, sf::Texture& lTexture, sf::Texture& rTexture, sf::Texture& lSleepTexture, sf::Texture& rSleepTexture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), lSprite(lTexture), rSprite(rTexture), lSleepingSprite(lSleepTexture), rSleepingSprite(rSleepTexture), isWalking(false){
     lSprite.setOrigin(width / 2, height / 2);
     lSprite.setScale((double)width / (double)lTexture.getSize().x, (double)height / (double)lTexture.getSize().y);
     lSprite.setPosition(x,y);
@@ -132,15 +132,15 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
     }
     else if(directionFacing == -1){
         if(action.compare("sleeping") == 0){
-            if((x + offsetX - 30 - (lSprite.getTexture()->getSize().x * lSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSprite.getTexture()->getSize().x * lSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSprite.getTexture()->getSize().y * lSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSprite.getTexture()->getSize().y * lSprite.getScale().y) > 0)){
-                lSprite.setPosition(x + offsetX, y + offsetY);
-                window.draw(lSprite);
-            }
-        }
-        //else if(action.compare("idle") == 0){
-            else if((x + offsetX - 30 - (lSleepingSprite.getTexture()->getSize().x * lSleepingSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSleepingSprite.getTexture()->getSize().x * lSleepingSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSleepingSprite.getTexture()->getSize().y * lSleepingSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSleepingSprite.getTexture()->getSize().y * lSleepingSprite.getScale().y) > 0)){
+            if((x + offsetX - 30 - (lSleepingSprite.getTexture()->getSize().x * lSleepingSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSleepingSprite.getTexture()->getSize().x * lSleepingSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSleepingSprite.getTexture()->getSize().y * lSleepingSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSleepingSprite.getTexture()->getSize().y * lSleepingSprite.getScale().y) > 0)){
                 lSleepingSprite.setPosition(x + offsetX, y + offsetY);
                 window.draw(lSleepingSprite);
+            }
+        }
+        //else if(action.compare("idle") == 0){ 
+            else if((x + offsetX - 30 - (lSprite.getTexture()->getSize().x * lSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSprite.getTexture()->getSize().x * lSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSprite.getTexture()->getSize().y * lSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSprite.getTexture()->getSize().y * lSprite.getScale().y) > 0)){
+                lSprite.setPosition(x + offsetX, y + offsetY);
+                window.draw(lSprite);
             }
         //}
     }
@@ -150,6 +150,11 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
 
     if(foodNeed > 100 || waterNeed > 100){
         health -= .02 * stepSize * deltaTime;
+    }
+    if(energyNeed > 100){
+        doingAction = true;
+        action = "sleeping";
+        sleep(deltaTime);
     }
 }
 
