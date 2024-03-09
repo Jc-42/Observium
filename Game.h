@@ -20,11 +20,13 @@ private:
     sf::Texture waterTexture;
     sf::Texture animalTextureL;
     sf::Texture animalTextureR;
+    sf::Texture animalTextureSleepingR;
+    sf::Texture animalTextureSleepingL;
     Animal rabbit;
     Tile map[35][35];
     double deltaTime;
-    int cameraOffsetX;
-    int cameraOffsetY;
+    double cameraOffsetX;
+    double cameraOffsetY;
 public:
     Game(int sizeX, int sizeY);
     sf::RenderWindow& getWindow();

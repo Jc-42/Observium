@@ -6,7 +6,7 @@
 #include <cmath>
 #include <random>
 
-Animal::Animal(double x, double y, int width, int height, sf::Texture& lTexture, sf::Texture& rTexture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), lSprite(lTexture), rSprite(rTexture), isWalking(false){
+Animal::Animal(double x, double y, int width, int height, sf::Texture& lTexture, sf::Texture& rTexture, sf::Texture& lSleepTexture, sf::Texture& rSleepTexture) : x(x), y(y), width(width), height(height), rect(x, y, width, height), lSprite(lTexture), rSprite(rTexture), lSleepingSprite(lTexture), rSleepingSprite(rTexture), isWalking(false){
     lSprite.setOrigin(width / 2, height / 2);
     lSprite.setScale((double)width / (double)lTexture.getSize().x, (double)height / (double)lTexture.getSize().y);
     lSprite.setPosition(x,y);
@@ -14,6 +14,14 @@ Animal::Animal(double x, double y, int width, int height, sf::Texture& lTexture,
     rSprite.setOrigin(width / 2, height / 2);
     rSprite.setScale((double)width / (double)rTexture.getSize().x, (double)height / (double)rTexture.getSize().y);
     rSprite.setPosition(x,y);
+
+    lSleepingSprite.setOrigin(width / 2, height / 2);
+    lSleepingSprite.setScale((double)width / (double)lSleepTexture.getSize().x, (double)height / (double)lSleepTexture.getSize().y);
+    lSleepingSprite.setPosition(x,y);
+
+    rSleepingSprite.setOrigin(width / 2, height / 2);
+    rSleepingSprite.setScale((double)width / (double)rSleepTexture.getSize().x, (double)height / (double)rSleepTexture.getSize().y);
+    rSleepingSprite.setPosition(x,y);
 
     health = 100;
     //Needs
@@ -86,8 +94,10 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
             
             if(max == needValues[0]){
                 //Take energy action
-                std::cout<<"ENERGY ACTION"<<std::endl;
-                energyNeed = 0;
+                std::cout<<"ENERGY ACTION"<<std::endl;            
+                doingAction = true;
+                action = "sleeping";
+                sleep(deltaTime);
             }
             else if(max == needValues[1]){
                 //Take food action
@@ -102,24 +112,44 @@ void Animal::draw(sf::RenderWindow& window, double& deltaTime, double offsetX, d
         }
     }
     
+    if(action.compare("sleeping") == 0){
+        sleep(deltaTime);
+    }
+
     if(directionFacing == 1){
-        if((x + offsetX - 30 - (rSprite.getTexture()->getSize().x * rSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (rSprite.getTexture()->getSize().x * rSprite.getScale().x) > 0) && (y + offsetY - 30 - (rSprite.getTexture()->getSize().y * rSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (rSprite.getTexture()->getSize().y * rSprite.getScale().y) > 0)){
-            rSprite.setPosition(x + offsetX, y + offsetY);
-            window.draw(rSprite);
+        if(action.compare("sleeping") == 0){
+            if((x + offsetX - 30 - (rSleepingSprite.getTexture()->getSize().x * rSleepingSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (rSleepingSprite.getTexture()->getSize().x * rSleepingSprite.getScale().x) > 0) && (y + offsetY - 30 - (rSleepingSprite.getTexture()->getSize().y * rSleepingSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (rSleepingSprite.getTexture()->getSize().y * rSleepingSprite.getScale().y) > 0)){
+                rSleepingSprite.setPosition(x + offsetX, y + offsetY);
+                window.draw(rSleepingSprite);
+            }
         }
+        //else if(action.compare("idle") == 0){
+            else if((x + offsetX - 30 - (rSprite.getTexture()->getSize().x * rSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (rSprite.getTexture()->getSize().x * rSprite.getScale().x) > 0) && (y + offsetY - 30 - (rSprite.getTexture()->getSize().y * rSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (rSprite.getTexture()->getSize().y * rSprite.getScale().y) > 0)){
+                rSprite.setPosition(x + offsetX, y + offsetY);
+                window.draw(rSprite);
+            }
+        //}
     }
     else if(directionFacing == -1){
-        if((x + offsetX - 30 - (lSprite.getTexture()->getSize().x * lSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSprite.getTexture()->getSize().x * lSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSprite.getTexture()->getSize().y * lSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSprite.getTexture()->getSize().y * lSprite.getScale().y) > 0)){
-            lSprite.setPosition(x + offsetX, y + offsetY);
-            window.draw(lSprite);
+        if(action.compare("sleeping") == 0){
+            if((x + offsetX - 30 - (lSprite.getTexture()->getSize().x * lSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSprite.getTexture()->getSize().x * lSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSprite.getTexture()->getSize().y * lSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSprite.getTexture()->getSize().y * lSprite.getScale().y) > 0)){
+                lSprite.setPosition(x + offsetX, y + offsetY);
+                window.draw(lSprite);
+            }
         }
+        //else if(action.compare("idle") == 0){
+            else if((x + offsetX - 30 - (lSleepingSprite.getTexture()->getSize().x * lSleepingSprite.getScale().x)  < window.getSize().x && x + offsetX + 30 + (lSleepingSprite.getTexture()->getSize().x * lSleepingSprite.getScale().x) > 0) && (y + offsetY - 30 - (lSleepingSprite.getTexture()->getSize().y * lSleepingSprite.getScale().y) < window.getSize().y && y + offsetY + 30 + (lSleepingSprite.getTexture()->getSize().y * lSleepingSprite.getScale().y) > 0)){
+                lSleepingSprite.setPosition(x + offsetX, y + offsetY);
+                window.draw(lSleepingSprite);
+            }
+        //}
     }
    
 
     //std::vector<int> test = Game::pixel_to_hex((double)x, (double)y, (double)width);
 
     if(foodNeed > 100 || waterNeed > 100){
-        health -= .002 * stepSize * deltaTime;
+        health -= .02 * stepSize * deltaTime;
     }
 }
 
@@ -163,33 +193,37 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
         }
     }
 
-    sf::Vector2f targetPosition = sf::Vector2f(nextTile->getX(), nextTile->getY());
-    sf::Vector2f currentPosition = sf::Vector2f(x, y);
+    if(isWalking){
+        sf::Vector2f targetPosition = sf::Vector2f(nextTile->getX(), nextTile->getY());
+        sf::Vector2f currentPosition = sf::Vector2f(x, y);
 
-    sf::Vector2f direction = targetPosition - currentPosition;
-    direction = Game::normalize(direction); // Function to normalize the vector (make its length 1)
+        sf::Vector2f direction = targetPosition - currentPosition;
+        direction = Game::normalize(direction); // Function to normalize the vector (make its length 1)
 
-    if(direction.x > 0) directionFacing = 1;
-    else if(direction.x < 0) directionFacing = -1;
+        if(direction.x > 0) directionFacing = 1;
+        else if(direction.x < 0) directionFacing = -1;
 
-    x += direction.x * stepSize * deltaTime;
-    y += direction.y * stepSize * deltaTime;
+        x += direction.x * stepSize * deltaTime;
+        y += direction.y * stepSize * deltaTime;
 
-    waterNeed += .015 * stepSize * deltaTime;
-    foodNeed += .0075 * stepSize * deltaTime;
-    energyNeed += .002 * stepSize * deltaTime;
+        waterNeed += .015 * stepSize * deltaTime;
+        foodNeed += .0075 * stepSize * deltaTime;
+        energyNeed += .002 * stepSize * deltaTime;
+    
 
     
-    //Check if the animal has moved to the target
-    if(sqrt(pow(targetX - x, 2) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
-        isWalking = false;
-        betweenHex = false;
+        //Check if the animal has moved to the target
+        if(sqrt(pow(targetX - x, 2) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
+            isWalking = false;
+            betweenHex = false;
+        }
+    
+        //Check if the animal has moved to the next tile in its path
+        else if(sqrt(pow(nextTile->getX() - x, 2) + pow(nextTile->getY() - y, 2)) <= 5 * stepSize * deltaTime){
+            betweenHex = false;
+        }
     }
 
-    //Check if the animal has moved to the next tile in its path
-    else if(sqrt(pow(nextTile->getX() - x, 2) + pow(nextTile->getY() - y, 2)) <= 5 * stepSize * deltaTime){
-        betweenHex = false;
-    }
 }
 
 //TODO implement a memory for the animal so that it knows where its been
@@ -220,7 +254,7 @@ void Animal::drink(Tile (&map)[35][35]){
             }
         }
         else{
-           std::cout<<"this tile is out of bounds"<<std::endl;
+           //std::cout<<"this tile is out of bounds"<<std::endl;
         }
         
     }
@@ -229,3 +263,11 @@ void Animal::drink(Tile (&map)[35][35]){
   // to go ie less random wandering
 }
 
+void Animal::sleep(double& deltaTime){
+    energyNeed -= .002 * stepSize * deltaTime * 3; //Deplete 3 times faster than it fills
+    if(energyNeed <= 0){
+        energyNeed = 0;
+        action = "idle";
+        doingAction = false;
+    }
+}

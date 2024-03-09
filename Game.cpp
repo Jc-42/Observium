@@ -33,9 +33,11 @@ Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", 
     altGrassTexture4.loadFromFile("Grass4f.png");
     grassTexture5.loadFromFile("Grass5.png");
     waterTexture.loadFromFile("RotatedWater.png");
-    animalTextureL.loadFromFile("RabbitL.png");
-    animalTextureR.loadFromFile("RabbitR.png");
-    rabbit = Animal(50, 50, 25, 25, animalTextureL, animalTextureR);
+    animalTextureL.loadFromFile("RabbitLNew.png");
+    animalTextureR.loadFromFile("RabbitRNew.png");
+    animalTextureSleepingL.loadFromFile("RabbitLSleeping.png");
+    animalTextureSleepingR.loadFromFile("RabbitRSleeping.png");
+    rabbit = Animal(50, 50, 25, 25, animalTextureL, animalTextureR, animalTextureSleepingL, animalTextureSleepingR);
     int rWater;
     int rGrass;
     for (int i = 0; i < 35; i++){
@@ -96,17 +98,17 @@ void Game::paint(){
     deltaTime = clock.restart().asSeconds();
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        cameraOffsetX -=  (int)(350 * deltaTime);
+        cameraOffsetX -= 200 * deltaTime;
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        cameraOffsetX += (int)(350 * deltaTime);
+        cameraOffsetX += 200 * deltaTime;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-        cameraOffsetY -= (int)(350 * deltaTime);
+        cameraOffsetY -= 200 * deltaTime;
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-        cameraOffsetY += (int)(350 * deltaTime);
+        cameraOffsetY += 200 * deltaTime;
     }
 /*
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -121,10 +123,10 @@ void Game::paint(){
     // Game::window.draw(text);
     for (int i = 0; i < 34; i++){
         for (int j = 0; j < 35; j++){
-            map[i][j].draw(window, -cameraOffsetX, -cameraOffsetY);
+            map[i][j].draw(window, -(int)cameraOffsetX, -(int)cameraOffsetY);
         }
     }
-    if(rabbit.health > 0) rabbit.draw(window, deltaTime, -cameraOffsetX, -cameraOffsetY, map);
+    if(rabbit.health > 0) rabbit.draw(window, deltaTime, -(int)cameraOffsetX, -(int)cameraOffsetY, map);
     //window.draw(hoverPos);
     Game::window.display();
 
@@ -145,4 +147,5 @@ void Game::paint(){
             rabbit.moveTo(random[0] * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (random[1] % 2)), (double)random[1] * ((3.0 / 2.0) * 48));
         }
     }
+    
 }
