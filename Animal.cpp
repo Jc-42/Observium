@@ -165,6 +165,8 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
         std::vector<std::vector<int>> results = Game::generate_results(center, 1);
         double min = std::numeric_limits<double>::max();
         double distance;
+        int nextTileX;
+        int nextTileY;
 
         //Get the ajacent tile that is closest to the target but skip water tiles as they shouldent be walkable
         for(int i = 0; i < results.size(); i++){
@@ -179,22 +181,40 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
                         std::cout<< "drank water" << std::endl;
                         return;
                     }
-                    continue;    
+                    continue; //skip water 
                 }
                 if(results[i][0] == animalHexPos[0] && results[i][1] == animalHexPos[1]) continue; //Skip the tile the animal is on
+                if(std::find(pathMemory.begin(), pathMemory.end(), results[i]) != pathMemory.end()) continue; //Skip if the animal has moved over that tile in its current walk
+
                 distance = sqrt(pow(map[results[i][0]][results[i][1]].getX() - targetX, 2) + pow(map[results[i][0]][results[i][1]].getY() - targetY, 2)); //Pythagorean Theorem! who ever said it would'nt be useful in real life?
                 if(distance < min){
                     min = distance;
                     nextTile = &map[results[i][0]][results[i][1]];
+                    nextTileX = results[i][0];
+                    nextTileY = results[i][1];
                 }
             }            
         }
 
+        
         if(min == std::numeric_limits<double>::max()){
-            std::cout<< "No Path Found" <<std::endl; //If this is called you done fucked up
+            //Animal is stuck since the map should never create an enclosed area this means the animal has hit a dead end therefor it must backtrack
+            std::cout<< "dead end" <<std::endl;
+            backtrackStep++;
+            if(pathMemory.size() - backtrackStep < 0){
+                //You done fucked up
+            }
+            else{
+                pathMemory.push_back({pathMemory[pathMemory.size() - backtrackStep][0], pathMemory[pathMemory.size() - backtrackStep][1]}); //Add new tile to pathMemory
+                backtrackStep++; //Increment again to account for push_back in above line
+                nextTile = &map[pathMemory[pathMemory.size() - backtrackStep][0]][pathMemory[pathMemory.size() - backtrackStep][1]];
+                betweenHex = true;
+            }
         }   
         else{
             betweenHex = true;
+            pathMemory.push_back({nextTileX, nextTileY}); //Add next tile to the memory
+            backtrackStep = 0; //Reset the backtrackStep because the animal does not need to chain any more backtracks
         }
     }
 
@@ -217,10 +237,12 @@ void Animal::move(double& deltaTime, Tile (&map)[35][35]){
     
 
     
-        //Check if the animal has moved to the target
+        //Check if the animal has moved to the target if so stop walking, clear the path memory, and reset the backtrackStep
         if(sqrt(pow(targetX - x, 2) + pow(targetY - y, 2)) <= 10 * stepSize * deltaTime){
             isWalking = false;
             betweenHex = false;
+            pathMemory.clear();
+            backtrackStep = 0;
         }
     
         //Check if the animal has moved to the next tile in its path

@@ -15,6 +15,7 @@ private:
     sf::Sprite lSleepingSprite;
     sf::Sprite rSleepingSprite;
     Tile* nextTile; //Pointer to the next tile the animal is moving to, used so that the animal moves from tile to tile untill it reaces the destination
+    std::vector<std::vector<int>> pathMemory; //List of hex cordinates of the hex's the animal has moved through during its current walk 
 public:
     //Needs
         double energyNeed;
@@ -33,6 +34,7 @@ public:
     double stepSize = 50;
     bool isWalking;
     bool doingAction;
+    int backtrackStep = 2; //Used to track how many tiles back the animal should backtrack, incremented everytime the animal hits a dead end on its current walk.
     //betweenHex is used to check if the animal has made it to the next hex yet so that the animal moves smoothly, 
     //it is different from isWalking because when the animal is walking it is isWalking many hexes 
     bool betweenHex = false;

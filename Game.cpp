@@ -44,7 +44,7 @@ Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", 
         for (int j = 0; j < 35; j++){
             rWater = distributionWater(gen);
             rGrass = distributionWater(gen);
-            if (rWater <= 5){
+            if (rWater <= 50){
                 map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, waterTexture, "water");
             }
             else{
@@ -147,5 +147,5 @@ void Game::paint(){
             rabbit.moveTo(random[0] * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (random[1] % 2)), (double)random[1] * ((3.0 / 2.0) * 48));
         }
     }
-    
+
 }
