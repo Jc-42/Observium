@@ -58,14 +58,15 @@ static std::vector<int> vector_add(const std::vector<int>& v1, const std::vector
 }
 
 // Function to generate results based on center and N
-static std::vector<std::vector<int>> generate_results(const std::vector<int>& center, int N) {
+static std::vector<std::vector<int>> generate_results(const std::vector<int>& center, int N, int mapSize) {
   std::vector<std::vector<int>> results;
   std::vector<std::vector<int>> resultsFin;
   for (int q = -N; q <= N; ++q) {
     for (int r = std::max(-N, -q - N); r <= std::min(N, -q + N); ++r) {
       int s = -q - r;
       std::vector<int> new_point = {q, r, s};
-      results.push_back(vector_add(center, new_point));
+      std::vector<int> new_point = vector_add(center, new_point);
+      if(new_point[0] < mapSize && new_point[0] >= 0 && new_point[1] < mapSize && new_point[1] >= 0) results.push_back(new_point);
     }
   }
 

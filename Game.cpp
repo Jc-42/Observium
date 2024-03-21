@@ -44,7 +44,7 @@ Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", 
         for (int j = 0; j < 35; j++){
             rWater = distributionWater(gen);
             rGrass = distributionWater(gen);
-            if (rWater <= 50){
+            if (rWater <= 5){
                 map[i][j] = Tile(i * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (j % 2)), (double)j * ((3.0 / 2.0) * 48), 48, waterTexture, "water");
             }
             else{
@@ -60,12 +60,12 @@ Game::Game(int sizeX, int sizeY) : window(VideoMode(sizeX, sizeY), "Observium", 
             }
         }
     }
-    //rabbit.moveTo(500, 500);
+    //rabbit.setMoveTarget(500, 500);
 
     // Example usage
     std::vector<int> center = Game::oddr_to_cube(5, 5);
     int N = 2;
-    std::vector<std::vector<int>> results = Game::generate_results(center, N);
+    std::vector<std::vector<int>> results = Game::generate_results(center, N, 35);
 
     // Print the results
     for (const auto &point : results){
@@ -126,10 +126,11 @@ void Game::paint(){
             map[i][j].draw(window, -(int)cameraOffsetX, -(int)cameraOffsetY);
         }
     }
-    if(rabbit.health > 0) rabbit.draw(window, deltaTime, -(int)cameraOffsetX, -(int)cameraOffsetY, map);
+    if(rabbit.health > 0) rabbit.update(window, deltaTime, -(int)cameraOffsetX, -(int)cameraOffsetY, map);
     //window.draw(hoverPos);
     Game::window.display();
 
+    /*
     if (rabbit.isWalking == false && rabbit.doingAction == false){
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -144,8 +145,9 @@ void Game::paint(){
         std::vector<int> random = Game::pixel_to_hex(randX, randY, 48);
         if(map[random[0]][random[1]].tag.compare("water") != 0){
             //TODO make a function to do this called hex_to_pixel
-            rabbit.moveTo(random[0] * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (random[1] % 2)), (double)random[1] * ((3.0 / 2.0) * 48));
+            rabbit.setMoveTarget(random[0] * (48 * sqrt(3)) + (((sqrt(3) * 48.0) / (2.0)) * (random[1] % 2)), (double)random[1] * ((3.0 / 2.0) * 48));
         }
     }
+    */
 
 }
