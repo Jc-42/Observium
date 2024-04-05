@@ -65,7 +65,7 @@ static std::vector<std::vector<int>> generate_results(const std::vector<int>& ce
     for (int r = std::max(-N, -q - N); r <= std::min(N, -q + N); ++r) {
       int s = -q - r;
       std::vector<int> new_point = {q, r, s};
-      std::vector<int> new_point = vector_add(center, new_point);
+      new_point = vector_add(center, new_point);
       if(new_point[0] < mapSize && new_point[0] >= 0 && new_point[1] < mapSize && new_point[1] >= 0) results.push_back(new_point);
     }
   }
